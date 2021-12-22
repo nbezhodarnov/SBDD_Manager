@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     BinaryFunction/binaryfunction.cpp \
+    BinaryFunctionsImporters/PlaFileBinaryFunctionsImporter/plafilebinaryfunctionsimporter.cpp \
     BinaryOperation/BinaryOperationAnd/binaryoperationand.cpp \
     BinaryOperation/BinaryOperationNot/binaryoperationnot.cpp \
     BinaryOperation/BinaryOperationOr/binaryoperationor.cpp \
@@ -20,6 +21,8 @@ SOURCES += \
 
 HEADERS += \
     BinaryFunction/binaryfunction.h \
+    BinaryFunctionsImporters/PlaFileBinaryFunctionsImporter/plafilebinaryfunctionsimporter.h \
+    BinaryFunctionsImporters/abstractbinaryfunctionsimporter.h \
     BinaryOperation/BinaryOperationAnd/binaryoperationand.h \
     BinaryOperation/BinaryOperationNot/binaryoperationnot.h \
     BinaryOperation/BinaryOperationOr/binaryoperationor.h \
