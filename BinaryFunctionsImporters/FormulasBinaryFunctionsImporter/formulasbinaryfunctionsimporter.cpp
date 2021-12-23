@@ -98,9 +98,10 @@ std::vector < std::string > FormulasBinaryFunctionsImporter::infixToPostfix(cons
             started_writing_variable_name = false;
             while (!formula_stack.empty())
             {
-                int prec2 = formula_stack.top() ;
-                int prec1 = operator_priority;
-                if (prec2 > prec1 || (prec2 == prec1 && symbol != '^')) {
+                int symbol_operator_priority = operator_priority;
+                int stack_operator_priority = formula_stack.top() ;
+                if (symbol_operator_priority > stack_operator_priority ||
+                        (symbol_operator_priority == stack_operator_priority && symbol != '^')) {
                     formula_postfix_sliced.push_back(
                                 std::string(1, std::find_if(
                                     operators_priorities.begin(),
