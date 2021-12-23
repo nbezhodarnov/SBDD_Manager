@@ -10,6 +10,8 @@ CONFIG += c++11
 
 SOURCES += \
     BinaryFunction/binaryfunction.cpp \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/FormulasBinaryFunctionsImporterWidget/formulasbinaryfunctionsimporterwidget.cpp \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/formulasbinaryfunctionsimporter.cpp \
     BinaryFunctionsImporters/PlaFileBinaryFunctionsImporter/plafilebinaryfunctionsimporter.cpp \
     BinaryOperation/BinaryOperationAnd/binaryoperationand.cpp \
     BinaryOperation/BinaryOperationNot/binaryoperationnot.cpp \
@@ -21,6 +23,8 @@ SOURCES += \
 
 HEADERS += \
     BinaryFunction/binaryfunction.h \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/FormulasBinaryFunctionsImporterWidget/formulasbinaryfunctionsimporterwidget.h \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/formulasbinaryfunctionsimporter.h \
     BinaryFunctionsImporters/PlaFileBinaryFunctionsImporter/plafilebinaryfunctionsimporter.h \
     BinaryFunctionsImporters/abstractbinaryfunctionsimporter.h \
     BinaryOperation/BinaryOperationAnd/binaryoperationand.h \
@@ -32,6 +36,7 @@ HEADERS += \
     mainwindow.h
 
 FORMS += \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/FormulasBinaryFunctionsImporterWidget/formulasbinaryfunctionsimporterwidget.ui \
     mainwindow.ui
 
 # Default rules for deployment.

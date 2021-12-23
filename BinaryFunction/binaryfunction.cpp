@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
-#define ERROR_VALUE BinaryFunction()
+#define BINARY_FUNCTION_ERROR_VALUE BinaryFunction()
 
 void Interval::AppendUnit(const IntervalUnit &new_unit)
 {
@@ -40,6 +40,20 @@ void Interval::RemoveUnitWithVariable(const std::string &variable)
 std::vector<IntervalUnit> Interval::GetUnits() const
 {
     return this->units;
+}
+
+IntervalUnit Interval::GetUnitWithVariable(const std::string &variable) const
+{
+    IntervalUnit result;
+    for (const IntervalUnit &unit : units)
+    {
+        if (unit.variable_name == variable)
+        {
+            result = unit;
+            break;
+        }
+    }
+    return result;
 }
 
 BinaryFunction::BinaryFunction()
@@ -132,11 +146,11 @@ BinaryFunction BinaryFunction::FixVariable(const std::string &variable, const Bi
     if (std::find(this->variables.begin(), this->variables.end(), variable) == this->variables.end())
     {
         std::cerr << "BinaryFunction: This variable doesn't used in this function!\n";
-        return ERROR_VALUE;
+        return BINARY_FUNCTION_ERROR_VALUE;
     }
     if (value == AnyValue) {
         std::cerr << "BinaryFunction: There is no need to fix the variable at value \"AnyValue\"!\n";
-        return ERROR_VALUE;
+        return BINARY_FUNCTION_ERROR_VALUE;
     }
 
     std::vector < std::string > variables_result = this->variables;

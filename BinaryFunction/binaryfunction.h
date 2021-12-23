@@ -25,6 +25,7 @@ public:
     void RemoveUnitAt(const unsigned int &index);
     void RemoveUnitWithVariable(const std::string &variable);
     std::vector < IntervalUnit > GetUnits() const;
+    IntervalUnit GetUnitWithVariable(const std::string &variable) const;
 
 private:
     std::vector < IntervalUnit > units;
