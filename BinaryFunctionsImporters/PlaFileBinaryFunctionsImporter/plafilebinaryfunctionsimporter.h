@@ -9,7 +9,7 @@ class PlaFileBinaryFunctionsImporter : public AbstractBinaryFunctionsImporter
 {
 public:
     PlaFileBinaryFunctionsImporter();
-    std::vector < BinaryFunction > ImportBinaryFunctions() const;
+    std::vector < BinaryFunction > ImportBinaryFunctions() const override;
 };
 
 #endif // PLAFILEBINARYFUNCTIONSIMPORTER_H

@@ -22,7 +22,7 @@ class FormulasBinaryFunctionsImporter : public AbstractBinaryFunctionsImporter
 {
 public:
     FormulasBinaryFunctionsImporter();
-    std::vector < BinaryFunction > ImportBinaryFunctions() const;
+    std::vector < BinaryFunction > ImportBinaryFunctions() const override;
 
 private:
     std::vector < std::string > infixToPostfix(const std::string &formula_infix) const;

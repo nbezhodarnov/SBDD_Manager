@@ -107,7 +107,11 @@ std::vector < BinaryFunction > PlaFileBinaryFunctionsImporter::ImportBinaryFunct
                 }
                 for (unsigned int j = 0; j < (unsigned int)splited_data[0].size(); j++)
                 {
-                    interval.AppendUnit({variables[j], splited_data[0] == '0' ? False : True});
+                    interval.AppendUnit({variables[j], splited_data[0][j] == '0' ? False : True});
+                }
+                if (splited_data[1][splited_data[1].size() - 1] == "\n")
+                {
+                    splited_data[1].chop(1);
                 }
                 if ((unsigned int)splited_data[1].size() != output_variables_count)
                 {

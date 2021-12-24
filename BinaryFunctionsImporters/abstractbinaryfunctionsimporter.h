@@ -10,8 +10,9 @@
 class AbstractBinaryFunctionsImporter
 {
 public:
-    AbstractBinaryFunctionsImporter();
+    AbstractBinaryFunctionsImporter() = default;
     virtual std::vector < BinaryFunction > ImportBinaryFunctions() const = 0;
+    virtual ~AbstractBinaryFunctionsImporter() = default;
 };
 
 #endif // ABSTRACTBINARYFUNCTIONSIMPORTER_H

@@ -34,7 +34,12 @@ void Interval::RemoveUnitAt(const unsigned int &index)
 
 void Interval::RemoveUnitWithVariable(const std::string &variable)
 {
-    this->units.erase(std::find(this->units.begin(), this->units.end(), variable));
+    this->units.erase(std::find_if(
+                          this->units.begin(),
+                          this->units.end(),
+                          [&](const IntervalUnit &unit)
+                          {return unit.variable_name == variable;}
+                          ));
 }
 
 std::vector<IntervalUnit> Interval::GetUnits() const
@@ -64,7 +69,11 @@ BinaryFunction::BinaryFunction()
 void BinaryFunction::AddInterval(const Interval &new_interval)
 {
     for (IntervalUnit& unit : new_interval.GetUnits()) {
-        if (std::find(this->variables.begin(), this->variables.end(), unit.variable_name) == this->variables.end())
+        if (std::find(
+                    this->variables.begin(),
+                    this->variables.end(),
+                    unit.variable_name
+                    ) == this->variables.end())
         {
             std::cerr << "BinaryFunction: This variable doesn't used in this function!\n";
             return;
@@ -113,7 +122,11 @@ void BinaryFunction::SetVariables(const std::vector<std::string> &new_variables)
         }
         for (unsigned int i = 0; i < interval.GetUnits().size(); i++)
         {
-            if (std::find(new_variables.begin(), new_variables.end(), interval.GetUnits()[i].variable_name) == new_variables.end())
+            if (std::find(
+                        new_variables.begin(),
+                        new_variables.end(),
+                        interval.GetUnits()[i].variable_name
+                        ) == new_variables.end())
             {
                 interval.RemoveUnitAt(i);
                 i--;
@@ -121,6 +134,11 @@ void BinaryFunction::SetVariables(const std::vector<std::string> &new_variables)
         }
     }
     this->variables = new_variables;
+}
+
+bool BinaryFunction::Empty() const
+{
+    return this->intervals.empty();
 }
 
 BinaryFunctionValue BinaryFunction::GetValue() const
@@ -154,7 +172,7 @@ BinaryFunction BinaryFunction::FixVariable(const std::string &variable, const Bi
     }
 
     std::vector < std::string > variables_result = this->variables;
-    variables_result.erase(std::find(this->variables.begin(), this->variables.end(), variable));
+    variables_result.erase(std::find(variables_result.begin(), variables_result.end(), variable));
     BinaryFunction result;
     result.SetVariables(variables_result);
     for (const Interval &interval : intervals)

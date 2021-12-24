@@ -9,7 +9,7 @@ class DotSBDDExporter : public AbstractSBDDExporter
 {
 public:
     DotSBDDExporter();
-    bool Export(const SBDD &sbdd) const;
+    bool Export(const SBDD &sbdd) const override;
 };
 
 #endif // DOTSBDDEXPORTER_H

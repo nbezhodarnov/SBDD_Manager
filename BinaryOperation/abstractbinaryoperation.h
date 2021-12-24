@@ -6,8 +6,9 @@
 class AbstractBinaryOperation
 {
 public:
-    AbstractBinaryOperation();
+    AbstractBinaryOperation() = default;
     virtual bool GetValue(const bool &first_variable, const bool &second_variable) const = 0;
+    virtual ~AbstractBinaryOperation() = default;
 };
 
 #endif // ABSTRACTBINARYOPERATION_H

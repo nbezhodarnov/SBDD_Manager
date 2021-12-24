@@ -20,6 +20,10 @@ SOURCES += \
     SBDD/sbdd.cpp \
     SBDDExporters/DotSBDDExporter/dotsbddexporter.cpp \
     SBDDExporters/TxtSBDDExporter/txtsbddexporter.cpp \
+    SBDDOperationsWidgets/ExportWidget/exportwidget.cpp \
+    SBDDOperationsWidgets/RestrictWidget/restrictwidget.cpp \
+    SBDDOperationsWidgets/SBDDSelectWidget/sbddselectwidget.cpp \
+    SBDDOperationsWidgets/SatWidget/satwidget.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -38,10 +42,18 @@ HEADERS += \
     SBDDExporters/DotSBDDExporter/dotsbddexporter.h \
     SBDDExporters/TxtSBDDExporter/txtsbddexporter.h \
     SBDDExporters/abstractsbddexporter.h \
+    SBDDOperationsWidgets/ExportWidget/exportwidget.h \
+    SBDDOperationsWidgets/RestrictWidget/restrictwidget.h \
+    SBDDOperationsWidgets/SBDDSelectWidget/sbddselectwidget.h \
+    SBDDOperationsWidgets/SatWidget/satwidget.h \
     mainwindow.h
 
 FORMS += \
     BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/FormulasBinaryFunctionsImporterWidget/formulasbinaryfunctionsimporterwidget.ui \
+    SBDDOperationsWidgets/ExportWidget/exportwidget.ui \
+    SBDDOperationsWidgets/RestrictWidget/restrictwidget.ui \
+    SBDDOperationsWidgets/SBDDSelectWidget/sbddselectwidget.ui \
+    SBDDOperationsWidgets/SatWidget/satwidget.ui \
     mainwindow.ui
 
 # Default rules for deployment.

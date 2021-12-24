@@ -7,7 +7,7 @@ class BinaryOperationNot : public AbstractBinaryOperation
 {
 public:
     BinaryOperationNot();
-    bool GetValue(const bool &first_variable, const bool &second_variable) const;
+    bool GetValue(const bool &first_variable, const bool &second_variable) const override;
 };
 
 #endif // BINARYOPERATIONNOT_H

@@ -76,6 +76,26 @@ SBDDStructure SBDD::GetStructure() const
     return structure;
 }
 
+std::vector < std::string > SBDD::GetVariablesNames() const
+{
+    std::vector < std::string > variables;
+    for (const std::shared_ptr < BinaryNode > &root_node : this->functions_root_nodes)
+    {
+        std::vector < std::string > variables_from_function = this->getVariablesNamesRecuresively(
+                    root_node
+                    );
+        for (std::string &variable : variables_from_function)
+        {
+            if (std::find(variables.begin(), variables.end(), variable) == variables.end())
+            {
+                variables.push_back(variable);
+            }
+        }
+    }
+    std::sort(variables.begin(), variables.end());
+    return variables;
+}
+
 void SBDD::Build(const std::vector<BinaryFunction> &functions)
 {
     for (unsigned int i = 0; i < functions.size(); i++)
@@ -196,6 +216,47 @@ SBDDStructure SBDD::getStructureRecirsively(const std::shared_ptr<BinaryNode> &n
                 high_node_structure.units.end()
                 );
     return structure;
+}
+
+std::vector < std::string > SBDD::getVariablesNamesRecuresively(
+        const std::shared_ptr < BinaryNode > &node
+        ) const
+{
+    if (node == nullptr || node->GetVariableName() == "0" || node->GetVariableName() == "1")
+    {
+        return {};
+    }
+    std::vector < std::string > variables;
+    std::vector < std::string > variables_from_low_node = this->getVariablesNamesRecuresively(
+                node->GetLowChild()
+                );
+    std::vector < std::string > variables_from_high_node = this->getVariablesNamesRecuresively(
+                node->GetHighChild()
+                );
+    std::vector < std::string > variables_from_children;
+    variables_from_children.insert(
+                variables_from_children.end(),
+                variables_from_low_node.begin(),
+                variables_from_low_node.end()
+                );
+    variables_from_children.insert(
+                variables_from_children.end(),
+                variables_from_high_node.begin(),
+                variables_from_high_node.end()
+                );
+    for (std::string &variable : variables_from_children)
+    {
+        if (std::find(variables.begin(), variables.end(), variable) == variables.end())
+        {
+            variables.push_back(variable);
+        }
+    }
+    if (std::find(variables.begin(), variables.end(), node->GetVariableName()) == variables.end())
+    {
+        variables.push_back(node->GetVariableName());
+    }
+    std::sort(variables.begin(), variables.end());
+    return variables;
 }
 
 bool SBDD::member(const unsigned int &level,

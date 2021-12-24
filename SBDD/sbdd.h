@@ -62,6 +62,7 @@ public:
 
     unsigned int GetFunctionsCount() const;
     SBDDStructure GetStructure() const;
+    std::vector < std::string > GetVariablesNames() const;
 
     void Build(
             const std::vector < BinaryFunction > &functions
@@ -87,6 +88,9 @@ public:
 
 private:
     SBDDStructure getStructureRecirsively(const std::shared_ptr < BinaryNode > &node) const;
+    std::vector < std::string > getVariablesNamesRecuresively(
+            const std::shared_ptr < BinaryNode > &node)
+    const;
 
     bool member(
             const unsigned int &level,

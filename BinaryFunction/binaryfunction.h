@@ -38,6 +38,7 @@ public:
     BinaryFunction();
     void AddInterval(const Interval &new_interval);
     void SetVariables(const std::vector < std::string > &new_variables);
+    bool Empty() const;
     BinaryFunctionValue GetValue() const;
     std::vector < std::string > GetVariables() const;
     BinaryFunction FixVariable(const std::string &variable, const BinaryFunctionValue &value) const;

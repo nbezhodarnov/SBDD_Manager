@@ -7,7 +7,7 @@ class BinaryOperationOr : public AbstractBinaryOperation
 {
 public:
     BinaryOperationOr();
-    bool GetValue(const bool &first_variable, const bool &second_variable) const;
+    bool GetValue(const bool &first_variable, const bool &second_variable) const override;
 };
 
 #endif // BINARYOPERATIONOR_H

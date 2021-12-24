@@ -9,7 +9,7 @@ class TxtSBDDExporter : public AbstractSBDDExporter
 {
 public:
     TxtSBDDExporter();
-    bool Export(const SBDD &sbdd) const;
+    bool Export(const SBDD &sbdd) const override;
 };
 
 #endif // TXTSBDDEXPORTER_H
