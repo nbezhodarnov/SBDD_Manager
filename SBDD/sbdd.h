@@ -28,6 +28,20 @@ bool compare_nodes(const BinaryNode& first_node, const BinaryNode& secont_node);
             );
  */
 
+struct SBDDStructureUnit
+{
+    unsigned int index;
+    unsigned int level;
+    std::vector < unsigned int > function_indexes;
+    std::string variable_name;
+    std::vector < unsigned int > children;
+};
+
+struct SBDDStructure
+{
+    std::vector < SBDDStructureUnit > units;
+};
+
 struct SatUnit
 {
     std::string variable_name;
@@ -47,6 +61,7 @@ public:
     SBDD();
 
     unsigned int GetFunctionsCount() const;
+    SBDDStructure GetStructure() const;
 
     void Build(
             const std::vector < BinaryFunction > &functions
@@ -71,6 +86,8 @@ public:
     void Simplify();
 
 private:
+    SBDDStructure getStructureRecirsively(const std::shared_ptr < BinaryNode > &node) const;
+
     bool member(
             const unsigned int &level,
             const std::vector < unsigned int > &function_indexes,

@@ -132,5 +132,6 @@ std::vector < BinaryFunction > PlaFileBinaryFunctionsImporter::ImportBinaryFunct
             }
         }
     }
+    file.close();
     return functions;
 }

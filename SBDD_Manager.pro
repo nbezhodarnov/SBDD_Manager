@@ -18,6 +18,8 @@ SOURCES += \
     BinaryOperation/BinaryOperationOr/binaryoperationor.cpp \
     SBDD/binarynode.cpp \
     SBDD/sbdd.cpp \
+    SBDDExporters/DotSBDDExporter/dotsbddexporter.cpp \
+    SBDDExporters/TxtSBDDExporter/txtsbddexporter.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -33,6 +35,9 @@ HEADERS += \
     BinaryOperation/abstractbinaryoperation.h \
     SBDD/binarynode.h \
     SBDD/sbdd.h \
+    SBDDExporters/DotSBDDExporter/dotsbddexporter.h \
+    SBDDExporters/TxtSBDDExporter/txtsbddexporter.h \
+    SBDDExporters/abstractsbddexporter.h \
     mainwindow.h
 
 FORMS += \

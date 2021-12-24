@@ -3,6 +3,8 @@
 #include <iostream>
 #include <algorithm>
 
+#define UINT_MAX 4294967295
+
 bool compare_nodes(const BinaryNode& first_node, const BinaryNode& secont_node)
 {
     if (
@@ -18,13 +20,60 @@ bool compare_nodes(const BinaryNode& first_node, const BinaryNode& secont_node)
 
 SBDD::SBDD()
 {
-    this->nodes.push_back(std::shared_ptr < BinaryNode > (new BinaryNode("0")));
-    this->nodes.push_back(std::shared_ptr < BinaryNode > (new BinaryNode("1")));
+    this->nodes.push_back(std::shared_ptr < BinaryNode > (new BinaryNode(
+                                                              "0",
+                                                              {nullptr, nullptr},
+                                                              0,
+                                                              0,
+                                                              {}
+                                                          )));
+    this->nodes.push_back(std::shared_ptr < BinaryNode > (new BinaryNode(
+                                                              "1",
+                                                              {nullptr, nullptr},
+                                                              1,
+                                                              0,
+                                                              {}
+                                                          )));
 }
 
 unsigned int SBDD::GetFunctionsCount() const
 {
     return this->functions_root_nodes.size();
+}
+
+SBDDStructure SBDD::GetStructure() const
+{
+    SBDDStructure structure;
+    for (const std::shared_ptr < BinaryNode > &node : this->functions_root_nodes)
+    {
+        SBDDStructure function_sbdd_structure = this->getStructureRecirsively(node);
+        structure.units.insert(
+                    structure.units.end(),
+                    function_sbdd_structure.units.begin(),
+                    function_sbdd_structure.units.end()
+                    );
+    }
+    structure.units.push_back({
+                                  0,
+                                  0,
+                                  {},
+                                  "0",
+                                  {
+                                      (unsigned int)UINT_MAX,
+                                      (unsigned int)UINT_MAX
+                                  }
+                              });
+    structure.units.push_back({
+                                  1,
+                                  0,
+                                  {},
+                                  "1",
+                                  {
+                                      (unsigned int)UINT_MAX,
+                                      (unsigned int)UINT_MAX
+                                  }
+                              });
+    return structure;
 }
 
 void SBDD::Build(const std::vector<BinaryFunction> &functions)
@@ -113,6 +162,40 @@ void SBDD::Simplify()
     {
         root_node = this->simplifyRecursively(root_node, root_node);
     }
+}
+
+SBDDStructure SBDD::getStructureRecirsively(const std::shared_ptr<BinaryNode> &node) const
+{
+    if (node == nullptr || node->GetVariableName() == "0" || node->GetVariableName() == "1")
+    {
+        return SBDDStructure();
+    }
+    SBDDStructure structure;
+    structure.units.push_back({
+                                  node->node_index,
+                                  node->level,
+                                  node->function_indexes,
+                                  node->GetVariableName(),
+                                  {
+                                      node->GetLowChild() != nullptr ?
+                                          node->GetLowChild()->node_index : (unsigned int)UINT_MAX,
+                                      node->GetHighChild() != nullptr ?
+                                          node->GetHighChild()->node_index : (unsigned int)UINT_MAX
+                                  }
+                              });
+    SBDDStructure low_node_structure = this->getStructureRecirsively(node->GetLowChild());
+    SBDDStructure high_node_structure = this->getStructureRecirsively(node->GetHighChild());
+    structure.units.insert(
+                structure.units.end(),
+                low_node_structure.units.begin(),
+                low_node_structure.units.end()
+                );
+    structure.units.insert(
+                structure.units.end(),
+                high_node_structure.units.begin(),
+                high_node_structure.units.end()
+                );
+    return structure;
 }
 
 bool SBDD::member(const unsigned int &level,
