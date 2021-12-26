@@ -9,7 +9,7 @@ DotSBDDExporter::DotSBDDExporter()
 
 bool DotSBDDExporter::Export(const SBDD &sbdd) const
 {
-    QString file_name = QFileDialog::getOpenFileName(
+    QString file_name = QFileDialog::getSaveFileName(
                 nullptr,
                 "Сохранить SBDD",
                 QDir::homePath(),
