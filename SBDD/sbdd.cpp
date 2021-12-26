@@ -10,7 +10,8 @@ bool compare_nodes(const BinaryNode& first_node, const BinaryNode& secont_node)
     if (
             first_node.level == secont_node.level &&
             first_node.function_indexes == secont_node.function_indexes &&
-            first_node.GetChildren() == secont_node.GetChildren()
+            first_node.GetChildren() == secont_node.GetChildren() &&
+            first_node.GetVariableName() == secont_node.GetVariableName()
             )
     {
         return true;
@@ -98,6 +99,7 @@ std::vector < std::string > SBDD::GetVariablesNames() const
 
 void SBDD::Build(const std::vector<BinaryFunction> &functions)
 {
+    this->functions_nodes.resize(functions.size());
     for (unsigned int i = 0; i < functions.size(); i++)
     {
         this->functions_root_nodes.push_back(this->buildRecursively(functions[i], i, 1));
@@ -305,7 +307,7 @@ std::shared_ptr<BinaryNode> SBDD::insert(const std::string &variable_name,
         const std::shared_ptr<BinaryNode> &high_node
         )
 {
-    std::shared_ptr < BinaryNode > new_node = std::shared_ptr < BinaryNode >(
+    std::shared_ptr < BinaryNode > new_node(
         new BinaryNode(
             variable_name,
             {low_node, high_node},
@@ -330,7 +332,7 @@ std::shared_ptr < BinaryNode > SBDD::buildRecursively(
     BinaryFunctionValue function_value = function.GetValue();
     if (function_value != AnyValue)
     {
-        return this->nodes[terminal_0_node_index ? function_value == False : terminal_1_node_index];
+        return this->nodes[function_value == False ? terminal_0_node_index : terminal_1_node_index];
     }
     else
     {
@@ -682,7 +684,8 @@ std::shared_ptr < BinaryNode > SBDD::MakeNode(const std::string &variable_name,
         const std::shared_ptr < BinaryNode > &high_node
         )
 {
-    if (compare_nodes(*(low_node.get()), *(high_node.get())))
+    if ((low_node != nullptr || high_node != nullptr) &&
+            compare_nodes(*(low_node.get()), *(high_node.get())))
     {
         return low_node;
     }
