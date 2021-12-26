@@ -14,20 +14,6 @@
 
 bool compare_nodes(const BinaryNode& first_node, const BinaryNode& secont_node);
 
-/*
-    SBDD(
-            unsigned int level_input = 0,
-            std::vector < unsigned int > function_indexes_input = 0,
-            std::shared_ptr < BinaryNode > low_node = nullptr,
-            std::shared_ptr < BinaryNode > high_node = nullptr
-            );
-    SBDD(
-            unsigned int level_input = 0,
-            std::vector < unsigned int > function_indexes_input = 0,
-            std::vector < std::shared_ptr < BinaryNode > > nodes = std::vector < std::shared_ptr < BinaryNode > >(2)
-            );
- */
-
 struct SBDDStructureUnit
 {
     unsigned int index;

@@ -125,21 +125,30 @@ void SBDD::Apply(const std::shared_ptr<AbstractBinaryOperation> &operation, cons
 
 void SBDD::Restrict(const std::string &variable, const bool &switch_node)
 {
+    if (variable == "0" || variable == "1")
+    {
+        std::cerr << "SBDD: Trying restrict terminal nodes!\n";
+        return;
+    }
+    bool variable_exists = false;
+    unsigned int variable_level = 0;
     for (std::shared_ptr < BinaryNode > &node : this->nodes)
     {
         if (node->GetVariableName() == variable)
         {
-            auto root_node_iterator = std::find(
-                        this->functions_root_nodes.begin(),
-                        this->functions_root_nodes.end(),
-                        node
-                        );
-            if (root_node_iterator != this->functions_root_nodes.end())
-            {
-                *root_node_iterator = this->restrictRecursively(node, node->level, switch_node);
-            }
-            this->restrictRecursively(node, node->level, switch_node);
+            variable_exists = true;
+            variable_level = node->level;
+            break;
         }
+    }
+    if (!variable_exists)
+    {
+        std::cerr << "SBDD: The variable isn't used!\n";
+        return;
+    }
+    for (std::shared_ptr < BinaryNode > &root_node : this->functions_root_nodes)
+    {
+        root_node = this->restrictRecursively(root_node, variable_level, switch_node);
     }
 }
 
@@ -469,6 +478,10 @@ std::shared_ptr<BinaryNode> SBDD::restrictRecursively(const std::shared_ptr<Bina
         const bool &switch_node
         )
 {
+    if (node->GetVariableName() == "0" || node->GetVariableName() == "1")
+    {
+        return node;
+    }
     if (node->level > level_index)
     {
         return node;

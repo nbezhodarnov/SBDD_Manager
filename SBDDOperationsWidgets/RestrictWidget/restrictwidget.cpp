@@ -33,7 +33,12 @@ std::pair < std::string, bool > RestrictWidget::GetVariableAndValue() const
                     this->ui->variablesListWidget->selectedItems()[0]
                 );
     }
-    return {this->variables[selected_variable_index], (bool)this->ui->valueButtonGroup->checkedId()};
+    bool value = false;
+    if (this->ui->valueButtonGroup->checkedId() == -3)
+    {
+        value = true;
+    }
+    return {this->variables[selected_variable_index], value};
 }
 
 RestrictWidget::~RestrictWidget()
