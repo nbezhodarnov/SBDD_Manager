@@ -13,10 +13,10 @@ std::shared_ptr<AbstractSBDDExporter> ExportWidget::GetExporter() const
     std::shared_ptr < AbstractSBDDExporter > exporter;
     switch (this->ui->exportButtonGroup->checkedId())
     {
-    case 0:
+    case -2:
         exporter = std::make_shared < TxtSBDDExporter >();
         break;
-    case 1:
+    case -3:
         exporter = std::make_shared < DotSBDDExporter >();
         break;
     default:
