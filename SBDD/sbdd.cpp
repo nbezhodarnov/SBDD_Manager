@@ -504,10 +504,16 @@ unsigned int SBDD::satCountRecursively(const std::shared_ptr<BinaryNode> &node) 
     {
         return 1;
     }
+    unsigned int low_node_level =
+            node->GetLowChild()->level != 0
+            ? node->GetLowChild()->level : this->GetVariablesNames().size() + 1;
+    unsigned int high_node_level =
+            node->GetHighChild()->level != 0
+            ? node->GetHighChild()->level : this->GetVariablesNames().size() + 1;
     return
-            (1 << (node->GetLowChild()->level - node->level - 1)) *
+            (1 << (low_node_level - node->level - 1)) *
             satCountRecursively(node->GetLowChild()) +
-            (1 << (node->GetHighChild()->level - node->level - 1)) *
+            (1 << (high_node_level - node->level - 1)) *
             satCountRecursively(node->GetHighChild());
 }
 
