@@ -34,7 +34,7 @@ bool DotSBDDExporter::Export(const SBDD &sbdd) const
                 line.append("\t");
                 line.append(
                             QString::fromStdString(unit.variable_name) +
-                            " " +
+                            "_" +
                             QString::number(unit.index)
                             );
                 line.append(" -> ");
