@@ -69,7 +69,7 @@ void MainWindow::applySBDD()
     std::vector < SBDD > sbdd_vector_copy = this->sbdd_vector;
     sbdd_vector_copy.erase(sbdd_vector_copy.begin() + choosen_sbdd_index);
     SBDDSelectWidget sbdd_select_window(sbdd_vector_copy, choosen_sbdd_index, this);
-    if (sbdd_select_window.exec() != QMessageBox::Ok)
+    if (sbdd_select_window.exec() != QMessageBox::Accepted)
     {
         return;
     }
@@ -89,7 +89,7 @@ void MainWindow::restrictSBDD()
                 );
     std::vector < std::string > variables = this->sbdd_vector[choosen_sbdd_index].GetVariablesNames();
     RestrictWidget restrict_window(variables, this);
-    if (restrict_window.exec() != QMessageBox::Ok)
+    if (restrict_window.exec() != QMessageBox::Accepted)
     {
         return;
     }
@@ -163,7 +163,7 @@ void MainWindow::exportSBDD()
         return;
     }
     ExportWidget export_window(this);
-    if (export_window.exec() != QMessageBox::Ok)
+    if (export_window.exec() != QMessageBox::Accepted)
     {
         return;
     }
