@@ -45,6 +45,8 @@ private slots:
 
     void getAllSatFromSBDD();
 
+    void simplifySBDD();
+
     void exportSBDD();
 
 private:

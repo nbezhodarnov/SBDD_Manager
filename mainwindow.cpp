@@ -50,6 +50,7 @@ void MainWindow::showSBDDContextMenu(const QPoint &mouse_position)
     myMenu.addAction("SatCount",  this, SLOT(getSatCountFromSBDD()));
     myMenu.addAction("AnySat",  this, SLOT(getAnySatFromSBDD()));
     myMenu.addAction("AllSat",  this, SLOT(getAllSatFromSBDD()));
+    myMenu.addAction("Simplify",  this, SLOT(simplifySBDD()));
     myMenu.addAction("Export",  this, SLOT(exportSBDD()));
 
     // Show context menu at handling position
@@ -141,6 +142,18 @@ void MainWindow::getAllSatFromSBDD()
                 );
     SatWidget sat_window(this->sbdd_vector[choosen_sbdd_index].AllSat(), this);
     sat_window.exec();
+}
+
+void MainWindow::simplifySBDD()
+{
+    if (this->ui->sbddListWidget->selectedItems().size() == 0)
+    {
+        return;
+    }
+    unsigned int choosen_sbdd_index = this->ui->sbddListWidget->row(
+                *this->ui->sbddListWidget->selectedItems().begin()
+                );
+    this->sbdd_vector[choosen_sbdd_index].Simplify();
 }
 
 void MainWindow::exportSBDD()
