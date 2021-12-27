@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <QDialog>
+#include <QListWidgetItem>
 
 namespace Ui {
 class FormulasBinaryFunctionsImporterWidget;
@@ -20,10 +21,11 @@ public:
     ~FormulasBinaryFunctionsImporterWidget();
 
 private slots:
-    void formulasList_currentRowChanged(const int &currentRow);
+    void formulasList_formulasList_itemChanged(QListWidgetItem *item);
 
 private:
     Ui::FormulasBinaryFunctionsImporterWidget *ui;
+    bool deleting_allowed = false;
 };
 
 #endif // FORMULASBINARYFUNCTIONSIMPORTERWIDGET_H

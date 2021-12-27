@@ -6,7 +6,13 @@ FormulasBinaryFunctionsImporterWidget::FormulasBinaryFunctionsImporterWidget(QWi
     ui(new Ui::FormulasBinaryFunctionsImporterWidget)
 {
     ui->setupUi(this);
-    connect(this->ui->formulasList, &QListWidget::currentRowChanged, this, &FormulasBinaryFunctionsImporterWidget::formulasList_currentRowChanged);
+    connect(
+                this->ui->formulasList,
+                &QListWidget::itemChanged,
+                this,
+                &FormulasBinaryFunctionsImporterWidget::formulasList_formulasList_itemChanged
+                );
+    this->deleting_allowed = true;
 }
 
 std::vector < std::string > FormulasBinaryFunctionsImporterWidget::GetFormulas() const
@@ -21,22 +27,35 @@ std::vector < std::string > FormulasBinaryFunctionsImporterWidget::GetFormulas()
 
 FormulasBinaryFunctionsImporterWidget::~FormulasBinaryFunctionsImporterWidget()
 {
-    disconnect(this->ui->formulasList, &QListWidget::currentRowChanged, this, &FormulasBinaryFunctionsImporterWidget::formulasList_currentRowChanged);
+    disconnect(
+                this->ui->formulasList,
+                &QListWidget::itemChanged,
+                this,
+                &FormulasBinaryFunctionsImporterWidget::formulasList_formulasList_itemChanged
+                );
     delete ui;
 }
 
-void FormulasBinaryFunctionsImporterWidget::formulasList_currentRowChanged(const int &currentRow)
+void FormulasBinaryFunctionsImporterWidget::formulasList_formulasList_itemChanged(QListWidgetItem *item)
 {
-    if (currentRow == this->ui->formulasList->count() - 1)
+    int current_row = this->ui->formulasList->row(item);
+    if (current_row == this->ui->formulasList->count() - 1)
     {
-        if (this->ui->formulasList->item(currentRow)->text() == "")
+        if (this->ui->formulasList->item(current_row)->text() == "")
         {
-            delete this->ui->formulasList->takeItem(this->ui->formulasList->count() - 1);
+            if (this->ui->formulasList->count() != 1 && this->deleting_allowed)
+            {
+                delete this->ui->formulasList->takeItem(this->ui->formulasList->count() - 1);
+            }
         }
         else
         {
+            this->deleting_allowed = false;
             this->ui->formulasList->addItem("");
+            this->ui->formulasList->item(this->ui->formulasList->count() - 1)->setFlags(
+                        Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled
+                        );
+            this->deleting_allowed = true;
         }
     }
 }
-

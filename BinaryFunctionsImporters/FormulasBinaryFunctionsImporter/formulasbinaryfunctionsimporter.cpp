@@ -49,7 +49,7 @@ std::vector < BinaryFunction > FormulasBinaryFunctionsImporter::ImportBinaryFunc
 
     FormulasBinaryFunctionsImporterWidget dialog_window;
 
-    if (dialog_window.exec() != QMessageBox::Ok) {
+    if (dialog_window.exec() != QMessageBox::Accepted) {
         return IMPORTER_ERROR_VALUE;
     }
 
@@ -79,7 +79,7 @@ std::vector < BinaryFunction > FormulasBinaryFunctionsImporter::ImportBinaryFunc
 }
 
 std::vector < std::string > FormulasBinaryFunctionsImporter::infixToPostfix(const std::string &formula_infix) const {
-    const unsigned int open_bracket_index = 0;
+    const unsigned int open_bracket_index = 4;
     std::map < char, unsigned int > operators_priorities = {{'!', 1}, {'&', 2}, {'|', 3}};
 
     std::vector < std::string > formula_postfix_sliced;
@@ -91,17 +91,16 @@ std::vector < std::string > FormulasBinaryFunctionsImporter::infixToPostfix(cons
 
     while (infix_index < formula_infix.size()) {
         char symbol = formula_infix[infix_index];
-        unsigned int operator_priority = operators_priorities[symbol];
 
-        if (operators_priorities.find(symbol) != operators_priorities.end())
+        if (operators_priorities.count(symbol) > 0)
         {
+            unsigned int operator_priority = operators_priorities[symbol];
             started_writing_variable_name = false;
             while (!formula_stack.empty())
             {
                 int symbol_operator_priority = operator_priority;
-                int stack_operator_priority = formula_stack.top() ;
-                if (symbol_operator_priority > stack_operator_priority ||
-                        (symbol_operator_priority == stack_operator_priority && symbol != '^')) {
+                int stack_operator_priority = formula_stack.top();
+                if (symbol_operator_priority >= stack_operator_priority) {
                     formula_postfix_sliced.push_back(
                                 std::string(1, std::find_if(
                                     operators_priorities.begin(),
@@ -126,8 +125,13 @@ std::vector < std::string > FormulasBinaryFunctionsImporter::infixToPostfix(cons
             while (formula_stack.top() != open_bracket_index)
             {
                 formula_postfix_sliced.push_back(
-                            std::string(1, operators_priorities[formula_stack.top()])
-                        );
+                                std::string(1, std::find_if(
+                                    operators_priorities.begin(),
+                                    operators_priorities.end(),
+                                    [&](const std::pair < char, unsigned int > &pair)
+                                    {return pair.second == formula_stack.top();}
+                                )->first
+                                ));
                 formula_stack.pop();
             }
             formula_stack.pop();
@@ -136,12 +140,12 @@ std::vector < std::string > FormulasBinaryFunctionsImporter::infixToPostfix(cons
         {
             if (started_writing_variable_name)
             {
-                formula_postfix_sliced.push_back(std::string(1, symbol));
-                started_writing_variable_name = true;
+                formula_postfix_sliced.back().append(std::string(1, symbol));
             }
             else
             {
-                formula_postfix_sliced.back().append(std::string(1, symbol));
+                formula_postfix_sliced.push_back(std::string(1, symbol));
+                started_writing_variable_name = true;
             }
 
         }
@@ -188,7 +192,14 @@ BinaryFunction FormulasBinaryFunctionsImporter::postfixToBinaryFunction(
                     formula_element
                     ) == operators_and_constants.end())
         {
-            variables.push_back(formula_element);
+            if (std::find(
+                        variables.begin(),
+                        variables.end(),
+                        formula_element
+                        ) == variables.end())
+            {
+                variables.push_back(formula_element);
+            }
         }
     }
 
@@ -200,6 +211,7 @@ BinaryFunction FormulasBinaryFunctionsImporter::postfixToBinaryFunction(
     std::sort(variables.begin(), variables.end());
 
     BinaryFunction function;
+    function.SetVariables(variables);
 
     unsigned long long int binary_vector = 0;
     unsigned long long int binary_vector_end = 1 << variables.size();
@@ -287,6 +299,7 @@ BinaryFunction FormulasBinaryFunctionsImporter::postfixToBinaryFunction(
         {
             function.AddInterval(interval);
         }
+        binary_vector++;
     }
     return function;
 }

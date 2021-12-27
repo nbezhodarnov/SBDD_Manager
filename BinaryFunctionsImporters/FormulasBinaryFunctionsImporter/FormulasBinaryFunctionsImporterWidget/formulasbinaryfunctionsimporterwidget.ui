@@ -26,12 +26,18 @@
    </item>
    <item>
     <widget class="QListWidget" name="formulasList">
+     <property name="editTriggers">
+      <set>QAbstractItemView::AllEditTriggers</set>
+     </property>
      <property name="itemAlignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
      <item>
       <property name="text">
        <string/>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
       </property>
      </item>
     </widget>
