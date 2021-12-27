@@ -119,7 +119,12 @@ void SBDD::Apply(const std::shared_ptr<AbstractBinaryOperation> &operation, cons
             std::pair < std::shared_ptr < BinaryNode >, std::shared_ptr < BinaryNode > >,
             std::shared_ptr < BinaryNode >
         > operation_results;
-        this->applyRecursively(operation, this->functions_root_nodes[i], other_sbdd.functions_root_nodes[i], operation_results);
+        this->functions_root_nodes[i] = this->applyRecursively(
+                    operation,
+                    this->functions_root_nodes[i],
+                    other_sbdd.functions_root_nodes[i],
+                    operation_results
+                    );
     }
 }
 
@@ -369,9 +374,10 @@ std::shared_ptr < BinaryNode > SBDD::buildRecursively(
     return nullptr;
 }
 
-std::shared_ptr < BinaryNode > SBDD::applyRecursively(const std::shared_ptr<AbstractBinaryOperation> &operation,
-        const std::shared_ptr<BinaryNode> &left_operand,
-        const std::shared_ptr<BinaryNode> &right_operand,
+std::shared_ptr < BinaryNode > SBDD::applyRecursively(
+        const std::shared_ptr < AbstractBinaryOperation > &operation,
+        const std::shared_ptr < BinaryNode > &left_operand,
+        const std::shared_ptr < BinaryNode > &right_operand,
         std::map <
             std::pair < std::shared_ptr < BinaryNode >, std::shared_ptr < BinaryNode > >,
             std::shared_ptr < BinaryNode >
@@ -409,6 +415,46 @@ std::shared_ptr < BinaryNode > SBDD::applyRecursively(const std::shared_ptr<Abst
         {
             result = this->nodes[terminal_0_node_index];
         }
+    }
+    else if (left_operand->GetVariableName() == "0" || left_operand->GetVariableName() == "1")
+    {
+        result = this->MakeNode(
+                    right_operand->GetVariableName(),
+                    left_operand->level,
+                    left_operand->function_indexes,
+                    this->applyRecursively(
+                        operation,
+                        left_operand,
+                        right_operand->GetLowChild(),
+                        operation_results
+                        ),
+                    this->applyRecursively(
+                        operation,
+                        left_operand,
+                        right_operand->GetHighChild(),
+                        operation_results
+                        )
+                    );
+    }
+    else if (right_operand->GetVariableName() == "0" || right_operand->GetVariableName() == "1")
+    {
+        result = this->MakeNode(
+                    left_operand->GetVariableName(),
+                    left_operand->level,
+                    left_operand->function_indexes,
+                    this->applyRecursively(
+                        operation,
+                        left_operand->GetLowChild(),
+                        right_operand,
+                        operation_results
+                        ),
+                    this->applyRecursively(
+                        operation,
+                        left_operand->GetHighChild(),
+                        right_operand,
+                        operation_results
+                        )
+                    );
     }
     else if (left_operand->GetVariableName() == right_operand->GetVariableName())
     {

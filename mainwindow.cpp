@@ -59,7 +59,7 @@ void MainWindow::showSBDDContextMenu(const QPoint &mouse_position)
 
 void MainWindow::applySBDD()
 {
-    if (this->ui->sbddListWidget->selectedItems().size() == 0)
+    if (this->ui->sbddListWidget->selectedItems().size() == 0 || this->sbdd_vector.size() <= 1)
     {
         return;
     }

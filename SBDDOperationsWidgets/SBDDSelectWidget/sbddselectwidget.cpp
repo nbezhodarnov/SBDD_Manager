@@ -15,11 +15,11 @@ SBDDSelectWidget::SBDDSelectWidget(
     this->sbdd_vector = new_sbdd_vector;
     for (unsigned int i = 0; i < choosen_sbdd_index; i++)
     {
-        this->ui->sbddListWidget->addItem("SBDD " + QString::number(i));
+        this->ui->sbddListWidget->addItem("SBDD " + QString::number(i + 1));
     }
-    for (unsigned int i = choosen_sbdd_index + 1; i < this->sbdd_vector.size(); i++)
+    for (unsigned int i = choosen_sbdd_index + 1; i < this->sbdd_vector.size() + 1; i++)
     {
-        this->ui->sbddListWidget->addItem("SBDD " + QString::number(i));
+        this->ui->sbddListWidget->addItem("SBDD " + QString::number(i + 1));
     }
 }
 
@@ -49,13 +49,13 @@ std::shared_ptr < AbstractBinaryOperation > SBDDSelectWidget::GetOperation() con
     std::shared_ptr < AbstractBinaryOperation > operation;
     switch (this->ui->operationsButtonGroup->checkedId())
     {
-    case 0:
+    case -2:
         operation = std::make_shared < BinaryOperationNot >();
         break;
-    case 1:
+    case -3:
         operation = std::make_shared < BinaryOperationAnd >();
         break;
-    case 2:
+    case -4:
         operation = std::make_shared < BinaryOperationOr >();
         break;
     default:
