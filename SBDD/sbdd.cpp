@@ -576,7 +576,7 @@ Sat SBDD::anySatRecursively(const std::shared_ptr<BinaryNode> &node) const
     return sat;
 }
 
-std::vector < Sat > SBDD::allSatRecursively(const std::shared_ptr<BinaryNode> &node) const
+std::vector < Sat > SBDD::allSatRecursively(const std::shared_ptr < BinaryNode > &node) const
 {
     if (compare_nodes(*node, *this->nodes[terminal_0_node_index]))
     {
@@ -600,7 +600,7 @@ std::vector < Sat > SBDD::allSatRecursively(const std::shared_ptr<BinaryNode> &n
         }
         return all_sats;
     }
-    else if (compare_nodes(*node->GetHighChild(), *this->nodes[terminal_1_node_index]))
+    else if (compare_nodes(*node->GetHighChild(), *this->nodes[terminal_0_node_index]))
     {
         std::vector < Sat > all_sats = allSatRecursively(node->GetLowChild());
         for (Sat &sat : all_sats)

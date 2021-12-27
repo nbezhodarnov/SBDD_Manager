@@ -127,7 +127,11 @@ void MainWindow::getAnySatFromSBDD()
     unsigned int choosen_sbdd_index = this->ui->sbddListWidget->row(
                 *this->ui->sbddListWidget->selectedItems().begin()
                 );
-    SatWidget sat_window({this->sbdd_vector[choosen_sbdd_index].AnySat()}, this);
+    SatWidget sat_window(
+                {this->sbdd_vector[choosen_sbdd_index].AnySat()},
+                this->sbdd_vector[choosen_sbdd_index].GetVariablesNames(),
+                this
+                );
     sat_window.exec();
 }
 
@@ -140,7 +144,11 @@ void MainWindow::getAllSatFromSBDD()
     unsigned int choosen_sbdd_index = this->ui->sbddListWidget->row(
                 *this->ui->sbddListWidget->selectedItems().begin()
                 );
-    SatWidget sat_window(this->sbdd_vector[choosen_sbdd_index].AllSat(), this);
+    SatWidget sat_window(
+                this->sbdd_vector[choosen_sbdd_index].AllSat(),
+                this->sbdd_vector[choosen_sbdd_index].GetVariablesNames(),
+                this
+                );
     sat_window.exec();
 }
 

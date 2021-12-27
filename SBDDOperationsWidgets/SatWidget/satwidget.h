@@ -16,12 +16,17 @@ class SatWidget : public QDialog
     Q_OBJECT
 
 public:
-    explicit SatWidget(const std::vector < Sat > &new_sats, QWidget *parent = nullptr);
+    explicit SatWidget(
+            const std::vector < Sat > &new_sats,
+            const std::vector < std::string > new_variables,
+            QWidget *parent = nullptr
+            );
     ~SatWidget();
 
 private:
     Ui::SatWidget *ui;
     std::vector < Sat > sats;
+    std::vector < std::string > variables;
 };
 
 #endif // SATWIDGET_H
