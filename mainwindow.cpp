@@ -50,7 +50,7 @@ void MainWindow::showSBDDContextMenu(const QPoint &mouse_position)
     myMenu.addAction("SatCount",  this, SLOT(getSatCountFromSBDD()));
     myMenu.addAction("AnySat",  this, SLOT(getAnySatFromSBDD()));
     myMenu.addAction("AllSat",  this, SLOT(getAllSatFromSBDD()));
-    myMenu.addAction("Simplify",  this, SLOT(simplifySBDD()));
+    //myMenu.addAction("Simplify",  this, SLOT(simplifySBDD()));
     myMenu.addAction("Export",  this, SLOT(exportSBDD()));
 
     // Show context menu at handling position
