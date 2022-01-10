@@ -1,5 +1,6 @@
 #include "dotsbddexporter.h"
 
+#include <set>
 #include <iostream>
 
 DotSBDDExporter::DotSBDDExporter()
@@ -24,6 +25,50 @@ bool DotSBDDExporter::Export(const SBDD &sbdd) const
     }
 
     file.write("digraph sbdd {\n");
+
+    std::set <unsigned int> children_indexes;
+    for (SBDDStructureUnit &unit : sbdd_structure.units)
+    {
+        for (unsigned int &index : unit.children)
+        {
+            children_indexes.insert(index);
+        }
+    }
+    for (SBDDStructureUnit &unit : sbdd_structure.units)
+    {
+        if (std::find(
+                    children_indexes.begin(),
+                    children_indexes.end(),
+                    unit.index
+                    ) == children_indexes.end())
+        {
+            for (unsigned int &function_index : unit.function_indexes)
+            {
+                QString line = "\tf";
+                line.append(QString::number(function_index + 1));
+                line.append(" [shape=plaintext]\n");
+                file.write(line.toUtf8());
+                line = "\tf";
+                line.append(QString::number(function_index + 1));
+                line.append(" -> ");
+                if (unit.variable_name != "0" && unit.variable_name != "1")
+                {
+                    line.append(
+                                QString::fromStdString(unit.variable_name) +
+                                "_" +
+                                QString::number(unit.index)
+                                );
+                }
+                else
+                {
+                    line.append(QString::fromStdString(unit.variable_name));
+                }
+                line.append(";\n");
+                file.write(line.toUtf8());
+            }
+        }
+    }
+
     for (SBDDStructureUnit &unit : sbdd_structure.units)
     {
         QString line;
@@ -90,6 +135,8 @@ bool DotSBDDExporter::Export(const SBDD &sbdd) const
         }
         file.write(line.toUtf8());
     }
+    file.write("\t1 [shape=box]\n");
+    file.write("\t0 [shape=box]\n");
     file.write("}\n");
     file.close();
     return true;
