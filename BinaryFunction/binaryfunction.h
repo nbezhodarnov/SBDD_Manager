@@ -15,6 +15,8 @@ struct IntervalUnit
 {
     std::string variable_name;
     BinaryFunctionValue value;
+
+    bool operator==(const IntervalUnit &other) const;
 };
 
 class Interval
@@ -26,6 +28,7 @@ public:
     void RemoveUnitWithVariable(const std::string &variable);
     std::vector < IntervalUnit > GetUnits() const;
     IntervalUnit GetUnitWithVariable(const std::string &variable) const;
+    bool operator==(const Interval &other) const;
 
 private:
     std::vector < IntervalUnit > units;
@@ -42,6 +45,7 @@ public:
     BinaryFunctionValue GetValue() const;
     std::vector < std::string > GetVariables() const;
     BinaryFunction FixVariable(const std::string &variable, const BinaryFunctionValue &value) const;
+    bool operator==(const BinaryFunction &other) const;
 
 private:
     std::vector < Interval > intervals;

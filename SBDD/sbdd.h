@@ -21,6 +21,7 @@ struct SBDDStructureUnit
     std::vector < unsigned int > function_indexes;
     std::string variable_name;
     std::vector < unsigned int > children;
+    bool operator==(const SBDDStructureUnit &other) const;
 };
 
 struct SBDDStructure
@@ -32,11 +33,13 @@ struct SatUnit
 {
     std::string variable_name;
     bool value;
+    bool operator==(const SatUnit &other) const;
 };
 
 struct Sat
 {
     std::vector < SatUnit > units;
+    bool operator==(const Sat &other) const;
 };
 
 #define SAT_ERROR_VALUE Sat()
@@ -45,6 +48,7 @@ class SBDD
 {
 public:
     SBDD();
+    SBDD(const SBDD &other);
 
     unsigned int GetFunctionsCount() const;
     SBDDStructure GetStructure() const;
@@ -73,6 +77,7 @@ public:
     void Simplify();
 
 private:
+    std::shared_ptr < BinaryNode > deepCopy(const std::shared_ptr < BinaryNode > &node);
     SBDDStructure getStructureRecirsively(const std::shared_ptr < BinaryNode > &node) const;
     std::vector < std::string > getVariablesNamesRecuresively(
             const std::shared_ptr < BinaryNode > &node)
@@ -101,6 +106,7 @@ private:
             );
 
     std::shared_ptr < BinaryNode > buildRecursively(
+            std::vector < std::pair < BinaryFunction,  std::shared_ptr < BinaryNode > > >& cash,
             const BinaryFunction &function,
             const unsigned int &function_index,
             const unsigned int &level_index
@@ -111,7 +117,7 @@ private:
             const std::shared_ptr < BinaryNode > &left_operand,
             const std::shared_ptr < BinaryNode > &right_operand,
             std::map <
-                std::pair < std::shared_ptr < BinaryNode >, std::shared_ptr < BinaryNode > >,
+                std::pair < unsigned int, unsigned int >,
                 std::shared_ptr < BinaryNode >
             > &operation_results
             );

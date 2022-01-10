@@ -19,6 +19,25 @@ bool compare_nodes(const BinaryNode& first_node, const BinaryNode& secont_node)
     return false;
 }
 
+bool SBDDStructureUnit::operator==(const SBDDStructureUnit &other) const
+{
+    return this->variable_name == other.variable_name &&
+           this->index == other.index &&
+           this->level == other.level &&
+           this->children == other.children &&
+           this->function_indexes == other.function_indexes;
+}
+
+bool SatUnit::operator==(const SatUnit &other) const
+{
+    return this->variable_name == other.variable_name && this->value == other.value;
+}
+
+bool Sat::operator==(const Sat &other) const
+{
+    return this->units == other.units;
+}
+
 SBDD::SBDD()
 {
     this->nodes.push_back(std::shared_ptr < BinaryNode > (new BinaryNode(
@@ -34,7 +53,33 @@ SBDD::SBDD()
                                                               1,
                                                               0,
                                                               {}
+                                                              )));
+}
+
+SBDD::SBDD(const SBDD &other)
+{
+    this->nodes.push_back(std::shared_ptr < BinaryNode > (new BinaryNode(
+                                                              "0",
+                                                              {nullptr, nullptr},
+                                                              0,
+                                                              0,
+                                                              {}
                                                           )));
+    this->nodes.push_back(std::shared_ptr < BinaryNode > (new BinaryNode(
+                                                              "1",
+                                                              {nullptr, nullptr},
+                                                              1,
+                                                              0,
+                                                              {}
+                                                              )));
+
+    this->functions_root_nodes.reserve(other.functions_root_nodes.size());
+    this->functions_nodes.resize(other.functions_nodes.size());
+
+    for(const auto &root : other.functions_root_nodes)
+    {
+        this->functions_root_nodes.push_back(deepCopy(root));
+    }
 }
 
 unsigned int SBDD::GetFunctionsCount() const
@@ -48,11 +93,18 @@ SBDDStructure SBDD::GetStructure() const
     for (const std::shared_ptr < BinaryNode > &node : this->functions_root_nodes)
     {
         SBDDStructure function_sbdd_structure = this->getStructureRecirsively(node);
-        structure.units.insert(
-                    structure.units.end(),
-                    function_sbdd_structure.units.begin(),
-                    function_sbdd_structure.units.end()
-                    );
+        for (SBDDStructureUnit &unit : function_sbdd_structure.units)
+        {
+            if (std::find(
+                        structure.units.begin(),
+                        structure.units.end(),
+                        unit
+                        ) == structure.units.end()
+               )
+            {
+                structure.units.push_back(unit);
+            }
+        }
     }
     structure.units.push_back({
                                   0,
@@ -97,28 +149,31 @@ std::vector < std::string > SBDD::GetVariablesNames() const
     return variables;
 }
 
-void SBDD::Build(const std::vector<BinaryFunction> &functions)
+void SBDD::Build(const std::vector < BinaryFunction > &functions)
 {
+    std::vector < std::pair < BinaryFunction, std::shared_ptr < BinaryNode > > > cash;
+
     this->functions_nodes.resize(functions.size());
     for (unsigned int i = 0; i < functions.size(); i++)
     {
-        this->functions_root_nodes.push_back(this->buildRecursively(functions[i], i, 1));
+        this->functions_root_nodes.push_back(this->buildRecursively(cash, functions[i], i, 1));
     }
 }
 
-void SBDD::Apply(const std::shared_ptr<AbstractBinaryOperation> &operation, const SBDD &other_sbdd)
+void SBDD::Apply(const std::shared_ptr < AbstractBinaryOperation > &operation, const SBDD &other_sbdd)
 {
     if (this->GetFunctionsCount() != other_sbdd.GetFunctionsCount())
     {
         std::cerr << "SBDD: Trying to Apply SBDD with different counts of functions!\n";
         return;
     }
+    std::map <
+        std::pair < unsigned int, unsigned int >,
+        std::shared_ptr < BinaryNode >
+    > operation_results;
+
     for (unsigned int i = 0; i < this->functions_root_nodes.size(); i++)
     {
-        std::map <
-            std::pair < std::shared_ptr < BinaryNode >, std::shared_ptr < BinaryNode > >,
-            std::shared_ptr < BinaryNode >
-        > operation_results;
         this->functions_root_nodes[i] = this->applyRecursively(
                     operation,
                     this->functions_root_nodes[i],
@@ -160,10 +215,16 @@ void SBDD::Restrict(const std::string &variable, const bool &switch_node)
 unsigned int SBDD::SatCount() const
 {
     unsigned int sat_count = 0;
-    for (const std::shared_ptr < BinaryNode > &root_node : this->functions_root_nodes)
+    unsigned int variables_count = this->GetVariablesNames().size();
+    std::vector < Sat > sats = this->AllSat();
+    for (const Sat &sat : sats)
+    {
+        sat_count += 1 << (variables_count - sat.units.size());
+    }
+    /*for (const std::shared_ptr < BinaryNode > &root_node : this->functions_root_nodes)
     {
         sat_count += this->satCountRecursively(root_node);
-    }
+    }*/
     return sat_count;
 }
 
@@ -189,6 +250,22 @@ std::vector < Sat > SBDD::AllSat() const
         std::vector < Sat > all_sats_for_function = this->allSatRecursively(root_node);
         all_sats.insert(all_sats.end(), all_sats_for_function.begin(), all_sats_for_function.end());
     }
+
+    for(int64_t i = 0;  i < int64_t(all_sats.size()) - 1; ++i)
+    {
+        for(int64_t j = i + 1; j < int64_t(all_sats.size());)
+        {
+            if(all_sats[i] == all_sats[j])
+            {
+                all_sats.erase(all_sats.begin() + j);
+            }
+            else
+            {
+                ++j;
+            }
+        }
+    }
+
     return all_sats;
 }
 
@@ -200,37 +277,78 @@ void SBDD::Simplify()
     }
 }
 
-SBDDStructure SBDD::getStructureRecirsively(const std::shared_ptr<BinaryNode> &node) const
+std::shared_ptr < BinaryNode > SBDD::deepCopy(const std::shared_ptr < BinaryNode > &node)
+{
+    if(node->node_index == terminal_0_node_index || node->node_index == terminal_1_node_index)
+    {
+        return this->nodes[node->node_index];
+    }
+
+    auto low_child = this->deepCopy(node->GetLowChild());
+    auto high_child = this->deepCopy(node->GetHighChild());
+
+    auto node_iterator = std::find(this->nodes.begin(), this->nodes.end(), node);
+    if (node_iterator != this->nodes.end())
+    {
+        return *node_iterator;
+    }
+
+    auto new_node = std::shared_ptr < BinaryNode >(new BinaryNode(node->GetVariableName(),
+                                                   {low_child, high_child},
+                                                   node->node_index,
+                                                   node->level,
+                                                   node->function_indexes));
+
+    this->nodes.push_back(new_node);
+    return new_node;
+}
+
+SBDDStructure SBDD::getStructureRecirsively(const std::shared_ptr < BinaryNode > &node) const
 {
     if (node == nullptr || node->GetVariableName() == "0" || node->GetVariableName() == "1")
     {
         return SBDDStructure();
     }
     SBDDStructure structure;
-    structure.units.push_back({
-                                  node->node_index,
-                                  node->level,
-                                  node->function_indexes,
-                                  node->GetVariableName(),
-                                  {
-                                      node->GetLowChild() != nullptr ?
-                                          node->GetLowChild()->node_index : (unsigned int)UINT_MAX,
-                                      node->GetHighChild() != nullptr ?
-                                          node->GetHighChild()->node_index : (unsigned int)UINT_MAX
-                                  }
-                              });
+    SBDDStructureUnit structure_unit = {
+        node->node_index,
+        node->level,
+        node->function_indexes,
+        node->GetVariableName(),
+        {
+            node->GetLowChild() != nullptr ?
+                node->GetLowChild()->node_index : (unsigned int)UINT_MAX,
+            node->GetHighChild() != nullptr ?
+                node->GetHighChild()->node_index : (unsigned int)UINT_MAX
+        }
+    };
+    structure.units.push_back(structure_unit);
     SBDDStructure low_node_structure = this->getStructureRecirsively(node->GetLowChild());
     SBDDStructure high_node_structure = this->getStructureRecirsively(node->GetHighChild());
-    structure.units.insert(
-                structure.units.end(),
-                low_node_structure.units.begin(),
-                low_node_structure.units.end()
-                );
-    structure.units.insert(
-                structure.units.end(),
-                high_node_structure.units.begin(),
-                high_node_structure.units.end()
-                );
+    for (SBDDStructureUnit &unit : low_node_structure.units)
+    {
+        if (std::find(
+                    structure.units.begin(),
+                    structure.units.end(),
+                    unit
+                    ) == structure.units.end()
+           )
+        {
+            structure.units.push_back(unit);
+        }
+    }
+    for (SBDDStructureUnit &unit : high_node_structure.units)
+    {
+        if (std::find(
+                    structure.units.begin(),
+                    structure.units.end(),
+                    unit
+                    ) == structure.units.end()
+           )
+        {
+            structure.units.push_back(unit);
+        }
+    }
     return structure;
 }
 
@@ -338,11 +456,39 @@ std::shared_ptr<BinaryNode> SBDD::insert(const std::string &variable_name,
 }
 
 std::shared_ptr < BinaryNode > SBDD::buildRecursively(
+        std::vector < std::pair < BinaryFunction,  std::shared_ptr < BinaryNode > > >& cash,
         const BinaryFunction &function,
         const unsigned int &function_index,
         const unsigned int &level_index
         )
 {
+    auto it = std::find_if(
+                cash.begin(),
+                cash.end(),
+                [&function](const std::pair < BinaryFunction,  std::shared_ptr < BinaryNode > >& data){
+                    return data.first == function;
+                }
+    );
+
+    if (it != cash.end())
+    {
+        if (it->second->node_index != terminal_0_node_index &&
+            it->second->node_index != terminal_1_node_index &&
+            std::find(
+                    it->second->function_indexes.begin(),
+                    it->second->function_indexes.end(),
+                    function_index
+            ) == it->second->function_indexes.end())
+        {
+            it->second->function_indexes.push_back(function_index);
+            std::sort(
+                        it->second->function_indexes.begin(),
+                        it->second->function_indexes.end()
+                     );
+        }
+        return it->second;
+    }
+
     BinaryFunctionValue function_value = function.GetValue();
     if (function_value != AnyValue)
     {
@@ -350,19 +496,50 @@ std::shared_ptr < BinaryNode > SBDD::buildRecursively(
     }
     else
     {
-        std::string variable_name = *function.GetVariables().begin();
+        std::string variable_name = function.GetVariables().front();
+
+        auto low_child_function = function.FixVariable(variable_name, False);
+        auto high_child_function = function.FixVariable(variable_name, True);
+
         std::shared_ptr < BinaryNode > low_child =
                 this->buildRecursively(
-                    function.FixVariable(variable_name, False),
+                    cash,
+                    low_child_function,
                     function_index,
                     level_index + 1
                     );
         std::shared_ptr < BinaryNode > high_child =
                 this->buildRecursively(
-                    function.FixVariable(variable_name, True),
+                    cash,
+                    high_child_function,
                     function_index,
                     level_index + 1
                     );
+
+        if(std::find_if(
+                    cash.begin(),
+                    cash.end(),
+                    [&low_child_function]
+                    (const std::pair < BinaryFunction,  std::shared_ptr < BinaryNode > >& data){
+                                return data.first == low_child_function;
+                    }
+                    ) == cash.end())
+        {
+            cash.push_back({low_child_function, low_child});
+        }
+
+        if(std::find_if(
+                    cash.begin(),
+                    cash.end(),
+                    [&high_child_function]
+                    (const std::pair < BinaryFunction,  std::shared_ptr < BinaryNode > >& data){
+                        return data.first == high_child_function;
+                    }
+                    ) == cash.end())
+        {
+            cash.push_back({high_child_function, high_child});
+        }
+
         return MakeNode(
                     variable_name,
                     level_index,
@@ -379,15 +556,17 @@ std::shared_ptr < BinaryNode > SBDD::applyRecursively(
         const std::shared_ptr < BinaryNode > &left_operand,
         const std::shared_ptr < BinaryNode > &right_operand,
         std::map <
-            std::pair < std::shared_ptr < BinaryNode >, std::shared_ptr < BinaryNode > >,
+            std::pair < unsigned int, unsigned int >,
             std::shared_ptr < BinaryNode >
         > &operation_results
         )
 {
     std::shared_ptr < BinaryNode > result(nullptr);
-    if (operation_results.find({left_operand, right_operand}) != operation_results.end())
+    if (operation_results.find(
+            {left_operand->node_index, right_operand->node_index}
+                ) != operation_results.end())
     {
-        return operation_results[{left_operand, right_operand}];
+        return operation_results[{left_operand->node_index, right_operand->node_index}];
     }
     else if (
              (left_operand->GetVariableName() == "0" ||
@@ -516,6 +695,7 @@ std::shared_ptr < BinaryNode > SBDD::applyRecursively(
                         )
                     );
     }
+    operation_results[{left_operand->node_index, right_operand->node_index}] = result;
     return result;
 }
 
@@ -756,7 +936,17 @@ std::shared_ptr < BinaryNode > SBDD::MakeNode(const std::string &variable_name,
     }
     else if (this->member(level, function_indexes, low_node, high_node))
     {
-        return lookup(level, function_indexes, low_node, high_node);
+        return this->lookup(level, function_indexes, low_node, high_node);
     }
-    return insert(variable_name, level, function_indexes, low_node, high_node);
+    std::shared_ptr < BinaryNode > low_node_copy = low_node;
+    std::shared_ptr < BinaryNode > high_node_copy = high_node;
+    if (std::find(this->nodes.begin(), this->nodes.end(), low_node) == this->nodes.end())
+    {
+        low_node_copy = this->deepCopy(low_node);
+    }
+    if (std::find(this->nodes.begin(), this->nodes.end(), high_node_copy) == this->nodes.end())
+    {
+        high_node_copy = this->deepCopy(high_node_copy);
+    }
+    return this->insert(variable_name, level, function_indexes, low_node_copy, high_node_copy);
 }

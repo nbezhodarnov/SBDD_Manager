@@ -5,6 +5,11 @@
 
 #define BINARY_FUNCTION_ERROR_VALUE BinaryFunction()
 
+bool IntervalUnit::operator==(const IntervalUnit &other) const
+{
+    return this->variable_name == other.variable_name && this->value == other.value;
+}
+
 void Interval::AppendUnit(const IntervalUnit &new_unit)
 {
     for (unsigned int i = 0; i < this->units.size(); i++)
@@ -59,6 +64,11 @@ IntervalUnit Interval::GetUnitWithVariable(const std::string &variable) const
         }
     }
     return result;
+}
+
+bool Interval::operator==(const Interval &other) const
+{
+    return this->units == other.units;
 }
 
 BinaryFunction::BinaryFunction()
@@ -194,4 +204,9 @@ BinaryFunction BinaryFunction::FixVariable(const std::string &variable, const Bi
         }
     }
     return result;
+}
+
+bool BinaryFunction::operator==(const BinaryFunction &other) const
+{
+    return this->variables == other.variables && this->intervals == other.intervals;
 }
