@@ -13,9 +13,42 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QListWidget" name="sbddListWidget"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Импорт</string>
+    </property>
+    <addaction name="import_pla"/>
+    <addaction name="import_formulas"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="import_pla">
+   <property name="text">
+    <string>Из pla файла</string>
+   </property>
+  </action>
+  <action name="import_formulas">
+   <property name="text">
+    <string>Из системы формул</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -9,13 +9,51 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    BinaryFunction/binaryfunction.cpp \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/FormulasBinaryFunctionsImporterWidget/formulasbinaryfunctionsimporterwidget.cpp \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/formulasbinaryfunctionsimporter.cpp \
+    BinaryFunctionsImporters/PlaFileBinaryFunctionsImporter/plafilebinaryfunctionsimporter.cpp \
+    BinaryOperation/BinaryOperationAnd/binaryoperationand.cpp \
+    BinaryOperation/BinaryOperationNot/binaryoperationnot.cpp \
+    BinaryOperation/BinaryOperationOr/binaryoperationor.cpp \
+    SBDD/binarynode.cpp \
+    SBDD/sbdd.cpp \
+    SBDDExporters/DotSBDDExporter/dotsbddexporter.cpp \
+    SBDDExporters/TxtSBDDExporter/txtsbddexporter.cpp \
+    SBDDOperationsWidgets/ExportWidget/exportwidget.cpp \
+    SBDDOperationsWidgets/RestrictWidget/restrictwidget.cpp \
+    SBDDOperationsWidgets/SBDDSelectWidget/sbddselectwidget.cpp \
+    SBDDOperationsWidgets/SatWidget/satwidget.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    BinaryFunction/binaryfunction.h \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/FormulasBinaryFunctionsImporterWidget/formulasbinaryfunctionsimporterwidget.h \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/formulasbinaryfunctionsimporter.h \
+    BinaryFunctionsImporters/PlaFileBinaryFunctionsImporter/plafilebinaryfunctionsimporter.h \
+    BinaryFunctionsImporters/abstractbinaryfunctionsimporter.h \
+    BinaryOperation/BinaryOperationAnd/binaryoperationand.h \
+    BinaryOperation/BinaryOperationNot/binaryoperationnot.h \
+    BinaryOperation/BinaryOperationOr/binaryoperationor.h \
+    BinaryOperation/abstractbinaryoperation.h \
+    SBDD/binarynode.h \
+    SBDD/sbdd.h \
+    SBDDExporters/DotSBDDExporter/dotsbddexporter.h \
+    SBDDExporters/TxtSBDDExporter/txtsbddexporter.h \
+    SBDDExporters/abstractsbddexporter.h \
+    SBDDOperationsWidgets/ExportWidget/exportwidget.h \
+    SBDDOperationsWidgets/RestrictWidget/restrictwidget.h \
+    SBDDOperationsWidgets/SBDDSelectWidget/sbddselectwidget.h \
+    SBDDOperationsWidgets/SatWidget/satwidget.h \
     mainwindow.h
 
 FORMS += \
+    BinaryFunctionsImporters/FormulasBinaryFunctionsImporter/FormulasBinaryFunctionsImporterWidget/formulasbinaryfunctionsimporterwidget.ui \
+    SBDDOperationsWidgets/ExportWidget/exportwidget.ui \
+    SBDDOperationsWidgets/RestrictWidget/restrictwidget.ui \
+    SBDDOperationsWidgets/SBDDSelectWidget/sbddselectwidget.ui \
+    SBDDOperationsWidgets/SatWidget/satwidget.ui \
     mainwindow.ui
 
 # Default rules for deployment.
